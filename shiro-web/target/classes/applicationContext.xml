@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<!-- ShiroFilter：用于配置Shiro的参数 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<!-- 关联SecurityManger -->
+		<property name="securityManager" ref="securityManager"/>
+		
+		<!-- 修改shiro认证不通过时，跳转的登录页面 -->
+		<property name="loginUrl" value="/admin_login.jsp"/>
+		
+		<!-- 必须配置授权失败跳转的页面 -->
+		<property name="unauthorizedUrl" value="/noauth.jsp"></property>
+		
+		<!-- Shiro过滤器规则：让shiro拦截哪些页面，怎么拦截 -->
+		<property name="filterChainDefinitions">
+			<value>
+				/user/login.action=anon
+				/user/edit.jsp=anon
+				/user/edit.jsp=roles[admin]
+				/user/*=authc
+				/index.jsp=authc
+			</value>
+		</property>
+	</bean>
+	
+	<!-- 创建SecurityManager -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<!-- 关联realm -->
+		<property name="realm" ref="loginRelam"/>
+	</bean>
+	
+	<!-- 创建Realm -->
+	<bean id="loginRelam" class="com.itheima.web.realms.LoginRealm"></bean>
+	
+	
+	
+	<context:component-scan base-package="com.itheima"/>
+	
+</beans>
